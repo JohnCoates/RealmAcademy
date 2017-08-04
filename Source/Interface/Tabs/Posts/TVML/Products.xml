@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<document>
+  <head>
+    <style>
+      @media tv-template and (tv-theme:dark) {
+        .badge {
+          tv-tint-color: rgb(255,255,255);
+        }
+      }
+      </style>
+   </head>
+   <productTemplate>
+      <background>
+      </background>
+      <banner>
+         <infoList>
+            <info>
+               <header>
+                  <title>Speaker</title>
+               </header>
+               <text>Mo Kudeki</text>
+            </info>
+            <info>
+               <header>
+                  <title>Event</title>
+               </header>
+               <text>try! Swift Tokyo</text>
+            </info>
+         </infoList>
+         <stack>
+            <title>Startup Swift</title>
+            <row>
+               <text>23 min</text>
+               <text>2017</text>
+               <badge src="resource://hd" class="badge" />
+               <badge src="resource://cc" class="badge" />
+            </row>
+            <description allowsZooming="true" moreLabel="more">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
+
+            <row>
+               <buttonLockup>
+                  <badge src="resource://button-play" />
+                  <title>Play</title>
+               </buttonLockup>
+            </row>
+         </stack>
+         <heroImg src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" />
+      </banner>
+      <shelf>
+         <header>
+            <title>Speakers</title>
+         </header>
+         <section>
+            <monogramLockup>
+               <monogram src="https://images.contentful.com/s72atsk5w5jo/3xh7Hfjuc8U2yEAkKO4wWA/b6a7efc6dd03f9d873f307536facd4b9/kudeki.jpg" firstName="Mo" lastName="Kudeki"/>
+               <title>Mo Kudeki</title>
+               <subtitle>Speaker</subtitle>
+            </monogramLockup>
+         </section>
+      </shelf>
+      <productInfo>
+         <infoTable>
+            <header>
+               <title>Information</title>
+            </header>
+            <info>
+               <header>
+                  <title>Event</title>
+               </header>
+               <text>try! Swift Tokyo 2017</text>
+            </info>
+            <info>
+               <header>
+                  <title>Runtime</title>
+               </header>
+               <text>23:01</text>
+            </info>
+            <info>
+               <header>
+                  <title>Released</title>
+               </header>
+               <text>March 31, 2017</text>
+            </info>
+         </infoTable>
+         <infoTable>
+            <header>
+               <title>Languages</title>
+            </header>
+            <info>
+               <header>
+                  <title>Primary</title>
+               </header>
+               <text>English (Stereo, CC)</text>
+            </info>
+            <info>
+               <header>
+                  <title>Additional</title>
+               </header>
+               <text>Cantonese (Subtitles)</text>
+            </info>
+         </infoTable>
+         <infoTable style="tv-line-spacing:10;">
+            <header>
+               <title>Accessibility</title>
+            </header>
+            <info>
+               <header>
+                  <textBadge>CC</textBadge>
+               </header>
+               <text>Closed captions refer to subtitles in the available language with addition with addition of relevant nondialog information.</text>
+            </info>
+         </infoTable>
+      </productInfo>
+   </productTemplate>
+</document>
