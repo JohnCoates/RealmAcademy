@@ -8,18 +8,27 @@
 
 import Foundation
 
+enum VideoDetailsResult {
+    case success(details: VideoDetails)
+    case error(message: String)
+}
+
+protocol VideoDetailsLoaderDelegate: class {
+    func videoDetailsLoader(_ loader: VideoDetailsLoader, result: VideoDetailsResult)
+}
+
 class VideoDetailsLoader {
+    
+    weak var delegate: VideoDetailsLoaderDelegate?
     
     let url: URL
     
-    init(jsonp: URL) {
+    init(jsonp: URL, delegate: VideoDetailsLoaderDelegate) {
         url = jsonp
+        self.delegate = delegate
     }
     
     func load() {
-//        let urlRequest = URLRequest(url: url,
-//                                    cachePolicy: .useProtocolCachePolicy,
-//                                    timeoutInterval: 10)
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 print("Couldn't load url: \(error)")
@@ -58,7 +67,8 @@ class VideoDetailsLoader {
                                    createdAt: createdAt,
                                    seoDescription: media["seoDescription"] as? String,
                                    mediaAssets: mediaAssets)
-        print("details: \(details)")
+        
+        delegate?.videoDetailsLoader(self, result: .success(details: details))
     }
     
     private func ingest(assets: [[String: Any]]) -> [MediaAsset] {

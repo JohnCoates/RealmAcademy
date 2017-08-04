@@ -14,14 +14,14 @@
       <background>
       </background>
       <banner>
-         <infoList>
-            <info>
+         <infoList id="sidebar">
+            <info id="sidebarSpeakers">
                <header>
                   <title>Speaker</title>
                </header>
                <text>Mo Kudeki</text>
             </info>
-            <info>
+            <info id="sidebarEvent">
                <header>
                   <title>Event</title>
                </header>
@@ -29,14 +29,14 @@
             </info>
          </infoList>
          <stack>
-            <title>Startup Swift</title>
+            <title id="title">Startup Swift</title>
             <row>
-               <text>23 min</text>
-               <text>2017</text>
+               <text id="headerTime">23 min</text>
+               <text id="headerYear">2017</text>
                <badge src="resource://hd" class="badge" />
-               <badge src="resource://cc" class="badge" />
+               <badge src="resource://cc" class="badge" id="CCBadge" />
             </row>
-            <description allowsZooming="true" moreLabel="more">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
+            <description allowsZooming="true" moreLabel="more" id="description">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
 
             <row>
                <buttonLockup>
@@ -45,13 +45,24 @@
                </buttonLockup>
             </row>
          </stack>
-         <heroImg src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" />
+         <heroImg src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" id="heroImage" />
       </banner>
+      <shelf>
+         <header>
+            <title>Videos</title>
+         </header>
+         <section id="videosSection">
+            <lockup videoID="0">
+               <img src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" width="384" height="226" />
+               <title>Startup Swift</title>
+            </lockup>
+         </section>
+      </shelf>
       <shelf>
          <header>
             <title>Speakers</title>
          </header>
-         <section>
+         <section id="monograms">
             <monogramLockup>
                <monogram src="https://images.contentful.com/s72atsk5w5jo/3xh7Hfjuc8U2yEAkKO4wWA/b6a7efc6dd03f9d873f307536facd4b9/kudeki.jpg" firstName="Mo" lastName="Kudeki"/>
                <title>Mo Kudeki</title>
@@ -64,19 +75,19 @@
             <header>
                <title>Information</title>
             </header>
-            <info>
+            <info id="infoEvent">
                <header>
                   <title>Event</title>
                </header>
                <text>try! Swift Tokyo 2017</text>
             </info>
-            <info>
+            <info id="infoRuntime">
                <header>
                   <title>Runtime</title>
                </header>
                <text>23:01</text>
             </info>
-            <info>
+            <info id="infoReleased">
                <header>
                   <title>Released</title>
                </header>
@@ -87,20 +98,20 @@
             <header>
                <title>Languages</title>
             </header>
-            <info>
+            <info id="infoPrimaryLanguage">
                <header>
                   <title>Primary</title>
                </header>
                <text>English (Stereo, CC)</text>
             </info>
-            <info>
+            <info id="infoAdditionalLanguages">
                <header>
                   <title>Additional</title>
                </header>
                <text>Cantonese (Subtitles)</text>
             </info>
          </infoTable>
-         <infoTable style="tv-line-spacing:10;">
+         <infoTable style="tv-line-spacing:10;" id="infoAccessebility">
             <header>
                <title>Accessibility</title>
             </header>

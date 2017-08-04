@@ -17,6 +17,7 @@ struct Post {
 struct PostDetails {
     var speakers: [Speaker]
     let jsonpURL: URL
+    var videoDetails: VideoDetails?
 }
 
 struct Speaker {

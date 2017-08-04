@@ -9,37 +9,50 @@
 import Foundation
 import Ji
 
-class VideoPageLoader {
+enum VideoPageResult {
+    case success(post: PostDetails)
+    case error(message: String)
+}
+
+protocol VideoPageLoaderDelegate: class {
+    func videoPageLoader(_ loader: VideoPageLoader, result: VideoPageResult)
+}
+
+class VideoPageLoader: VideoDetailsLoaderDelegate {
+    
+    var delegate: VideoPageLoaderDelegate?
     
     private let url: URL
     
-    init(url: URL) {
+    init(url: URL, delegate: VideoPageLoaderDelegate) {
         self.url = url
+        self.delegate = delegate
     }
     
-    func load() -> Bool {
+    var videoDetailsLoader: VideoDetailsLoader?
+    
+    var document: Ji?
+    
+    func load() {
+        DispatchQueue.global(qos: .background).async {
+            self.loadInBackground()
+        }
+    }
+    
+    private func loadInBackground() {
         guard let document = Ji(htmlURL: url) else {
-            return false
+            delegate?.videoPageLoader(self,
+                                      result: .error(message: "Couldn't retrieve page document for url: \(url)"))
+            return
         }
         
-        guard let details = postDetails(fromDocument: document) else {
-            return false
-        }
-        
-        postDetails = details
-        
-        return true
-    }
-    
-    var postDetails: PostDetails?
-    
-    private func postDetails(fromDocument document: Ji) -> PostDetails? {
-        let speakers = self.speakers(document: document)
-        print("speakers: \(speakers)")
+        self.document = document
         
         let jsonpURL = jsonp(document: document)
         
-        return PostDetails(speakers: speakers, jsonpURL: jsonpURL)
+        let detailsLoader = VideoDetailsLoader(jsonp: jsonpURL, delegate: self)
+        detailsLoader.load()
+        videoDetailsLoader = detailsLoader
     }
     
     private func speakers(document: Ji) -> [Speaker] {
@@ -117,6 +130,28 @@ class VideoPageLoader {
         }
         
         return url
+    }
+    
+    // MARK: - Video Details Loader Delegate
+    
+    func videoDetailsLoader(_ loader: VideoDetailsLoader, result: VideoDetailsResult) {
+        guard let document = document else {
+            delegate?.videoPageLoader(self,
+                                      result: .error(message: "Missing document"))
+            return
+        }
+        
+        let speakers = self.speakers(document: document)
+        
+        switch result {
+        case let .success(videoDetails):
+            let details = PostDetails(speakers: speakers,
+                                      jsonpURL: loader.url,
+                                      videoDetails: videoDetails)
+            delegate?.videoPageLoader(self, result: .success(post: details))
+        case let .error(message):
+            delegate?.videoPageLoader(self, result: .error(message: message))
+        }
     }
     
 }
