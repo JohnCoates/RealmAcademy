@@ -25,7 +25,7 @@ extension String {
         
         var urls: [URL] = []
         for match in matches {
-            guard let url = match.url else{
+            guard let url = match.url else {
                 continue
             }
             

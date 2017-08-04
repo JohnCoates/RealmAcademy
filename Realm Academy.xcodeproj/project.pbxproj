@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		950F3A866E7BFC7B089DC639 /* Pods_Realm_Academy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42FE4220144FFE2D2BB4C82 /* Pods_Realm_Academy.framework */; };
+		FA18943C1F34C23D0096DB0D /* VideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA18943B1F34C23D0096DB0D /* VideoViewModel.swift */; };
 		FAD015531F341CFC006B7926 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD015521F341CFC006B7926 /* AppDelegate.swift */; };
 		FAD015551F341CFC006B7926 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD015541F341CFC006B7926 /* FirstViewController.swift */; };
 		FAD015571F341CFC006B7926 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD015561F341CFC006B7926 /* SecondViewController.swift */; };
@@ -34,6 +35,7 @@
 		51F4F787EC4207F571990149 /* Pods-Realm Academy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Realm Academy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Realm Academy/Pods-Realm Academy.debug.xcconfig"; sourceTree = "<group>"; };
 		9B2CF2070EB0E7B71B0BF69A /* Pods-Realm Academy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Realm Academy.release.xcconfig"; path = "Pods/Target Support Files/Pods-Realm Academy/Pods-Realm Academy.release.xcconfig"; sourceTree = "<group>"; };
 		D42FE4220144FFE2D2BB4C82 /* Pods_Realm_Academy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Realm_Academy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA18943B1F34C23D0096DB0D /* VideoViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoViewModel.swift; sourceTree = "<group>"; };
 		FAD0154F1F341CFC006B7926 /* Realm Academy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Realm Academy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD015521F341CFC006B7926 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAD015541F341CFC006B7926 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				FAD015771F3430A8006B7926 /* Post.swift */,
+				FA18943B1F34C23D0096DB0D /* VideoViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -390,6 +393,7 @@
 			files = (
 				FAD015A51F347D3E006B7926 /* URL+Secure.swift in Sources */,
 				FAD0156F1F343029006B7926 /* PostsLoader.swift in Sources */,
+				FA18943C1F34C23D0096DB0D /* VideoViewModel.swift in Sources */,
 				FAD015AB1F3490DD006B7926 /* Critical.swift in Sources */,
 				FAD015B41F34AF50006B7926 /* VideosScreenController.swift in Sources */,
 				FAD015A21F3479E9006B7926 /* String+TextDetecting.swift in Sources */,

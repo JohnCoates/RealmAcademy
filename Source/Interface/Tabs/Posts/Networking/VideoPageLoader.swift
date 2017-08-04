@@ -120,13 +120,63 @@ class VideoPageLoader: VideoDetailsLoaderDelegate {
     }
     
     private func jsonp(document: Ji) -> URL {
-        let path = XPathItem(element: "script").with(attribute: "src", containing: ".jsonp").relative
+        let path = XPathItem(element: "script").with(attribute: "src", containing: ".jsonp").xPath
         
         guard let node = document.xPath(path)?.first,
               let src = node.attributes["src"],
               let url = URL(string: src)
         else {
             fatalError("Failed to find jsonp in document: \(document)")
+        }
+        
+        return url
+    }
+
+    private func title(document: Ji) -> String {
+        let path = XPathItem(element: "title").xPath
+        guard let node = document.xPath(path)?.first,
+            let title = node.content?.trimmed else {
+                
+                fatalError("Failed to find title in document: \(document)")
+        }
+        
+        return title
+    }
+    
+    private func description(document: Ji) -> String {
+        let parentPath = XPathItem(element: "div", id: "transcript").xPath + "/div[1]"
+        
+        guard let parentNode = document.xPath(parentPath)?.first else {
+            fatalError("Failed to find description in document: \(document)")
+        }
+        
+        var description = ""
+        for child in parentNode.children {
+            guard let tagName = child.tagName?.lowercased() else {
+                continue
+            }
+            if tagName != "p" {
+                break
+            }
+            
+            if let content = child.content?.trimmed.strippedHTML.whitespaceCleaned {
+                if description.characters.count > 0 {
+                    description += "\\n"
+                }
+                description += content
+            }
+        }
+        
+        return description
+    }
+    
+    private func imageURL(document: Ji) -> URL {
+        let path = XPathItem(element: "div", hasClass: "post-header").xPath
+        
+        guard let node = document.xPath(path)?.first,
+            let style = node.attributes["style"]?.replacingOccurrences(of: "')", with: ""),
+            let url = style.detectedURLS.first?.secured else {
+            fatalError("Couldn't find image url for page: \(document)")
         }
         
         return url
@@ -147,6 +197,9 @@ class VideoPageLoader: VideoDetailsLoaderDelegate {
         case let .success(videoDetails):
             let details = PostDetails(speakers: speakers,
                                       jsonpURL: loader.url,
+                                      title: title(document: document),
+                                      description: description(document: document),
+                                      imageURL: imageURL(document: document),
                                       videoDetails: videoDetails)
             delegate?.videoPageLoader(self, result: .success(post: details))
         case let .error(message):

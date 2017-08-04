@@ -30,15 +30,19 @@ class VideosScreenController: VideoPageLoaderDelegate {
         cookbook.evaluateAppJavaScriptInContext = self.executeIntialJavascript
         Kitchen.prepare(cookbook)
         
-        Kitchen.window.alpha = 1
-        Kitchen.serve(xmlString: xml,
-                      redirectWindow: window, animatedWindowTransition: true)
+        // Stops responding to user input if done immediately
+        DispatchQueue.main.async {
+            Kitchen.window.alpha = 1
+            Kitchen.serve(xmlString: self.xml,
+                          redirectWindow: window, animatedWindowTransition: true)
+        }
+        
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { 
             Kitchen.appController.evaluate(inJavaScriptContext: self.addVideo,
                                            completion: nil)
         }
-//        loadPage()
+        loadPage()
     }
     
     
@@ -50,7 +54,7 @@ class VideosScreenController: VideoPageLoaderDelegate {
     var videoDetailsLoader: VideoDetailsLoader?
     
     func loadPage() {
-//        pageLoader.load()
+        pageLoader.load()
     }
     
     private func executeIntialJavascript(controller: TVApplicationController,
@@ -73,6 +77,32 @@ class VideosScreenController: VideoPageLoaderDelegate {
         context.evaluateScript("addVideo()")
     }
     
+    var viewModel: VideoViewModel?
+    
+    private func hydrateView(context: JSContext) {
+        let bridge = ContextBridge(context: context)
+        bridge.set(id: "title", content: "Update Test")
+        
+        guard let viewModel = viewModel else {
+            return
+        }
+        bridge.set(id: "headerTime", content: viewModel.headerTime)
+        bridge.set(id: "headerYear", content: viewModel.year)
+        bridge.set(id: "title", content: viewModel.title)
+        bridge.set(id: "description", content: viewModel.description)
+        bridge.removeSpeakers()
+        
+        for speaker in viewModel.speakers {
+            bridge.addSpeaker(name: speaker.name)
+            print("adding speaker: \(speaker.name)")
+        }
+        bridge.removeChildren(forID: "sidebarEvent")
+        
+        bridge.set(id: "heroImage", attribute: "src", value: viewModel.heroImage)
+        print("image: \(viewModel.heroImage)")
+        
+    }
+    
     // MARK: - Page Loader Delegate
     
     var posts = [PostDetails]()
@@ -90,8 +120,42 @@ class VideosScreenController: VideoPageLoaderDelegate {
     }
     
     private func add(post: PostDetails) {
+        viewModel = VideoViewModel(post: post)
+        Kitchen.appController.evaluate(inJavaScriptContext: self.hydrateView,
+                                       completion: nil)
+        
         print("loaded: \(post)")
         posts.append(post)
     }
 
+}
+
+private struct ContextBridge {
+    
+    let context: JSContext
+    
+    init(context: JSContext) {
+        self.context = context
+    }
+    
+    func set(id: String, content: String) {
+        context.evaluateScript("setContent(\"\(id)\", \"\(content)\")")
+    }
+    
+    func set(id: String, attribute: String, value: String) {
+        context.evaluateScript("setAttributeFor(\"\(id)\", \"\(attribute)\", \"\(value)\")")
+    }
+    
+    func removeChildren(forID id: String) {
+        context.evaluateScript("removeChildrenForId(\"\(id)\")")
+    }
+    
+    func addSpeaker(name: String) {
+        context.evaluateScript("addSpeaker(\"\(name)\")")
+    }
+    
+    func removeSpeakers() {
+        context.evaluateScript("removeSpeakers()")
+    }
+    
 }

@@ -18,7 +18,7 @@ class FirstViewController: UIViewController, PostsLoaderDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        postsLoader.loadPage()
+//        postsLoader.loadPage()
     }
 }
 

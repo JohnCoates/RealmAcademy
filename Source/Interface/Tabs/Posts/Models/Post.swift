@@ -17,8 +17,13 @@ struct Post {
 struct PostDetails {
     var speakers: [Speaker]
     let jsonpURL: URL
-    var videoDetails: VideoDetails?
+    var title: String
+    var description: String
+    var imageURL: URL
+    var videoDetails: VideoDetails
 }
+
+// caption URL: https://fast.wistia.com/embed/captions/hi5lo3zy12.json
 
 struct Speaker {
     let name: String
