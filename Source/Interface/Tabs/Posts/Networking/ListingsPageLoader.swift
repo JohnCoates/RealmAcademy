@@ -9,6 +9,16 @@
 import Foundation
 import Ji
 
+
+enum ListingsPageResult {
+    case success(posts: [Post])
+    case error(message: String)
+}
+
+protocol ListingsPageLoaderDelegate: class {
+    func listingPageLoader(_ loader: ListingsPageLoader, result: ListingsPageResult)
+}
+
 class ListingsPageLoader {
     
     private lazy var url: URL = {
@@ -17,16 +27,38 @@ class ListingsPageLoader {
     
     private let page: Int
     
-    init(page: Int) {
+    weak var delegate: ListingsPageLoaderDelegate?
+    
+    init(delegate: ListingsPageLoaderDelegate, page: Int) {
         self.page = page
+        self.delegate = delegate
     }
     
-    func load() -> Bool {
+    func load() {
+        DispatchQueue.global(qos: .background).async {
+            self.loadInBackground()
+        }
+    }
+    
+    private func loadInBackground() {
+        let delegate = self.delegate
+        let reportError: () -> Void = {
+            delegate?.listingPageLoader(self,
+                                        result: .error(message: "Failed to load \(self.url)"))
+        }
         guard let document = Ji(htmlURL: url) else {
-            return false
+            DispatchQueue.main.async(execute: reportError)
+            return
         }
         
-        return hydratePosts(fromDocument: document)
+        if hydratePosts(fromDocument: document) {
+            DispatchQueue.main.async {
+                delegate?.listingPageLoader(self, result: .success(posts: self.posts))
+            }
+            
+        } else {
+            DispatchQueue.main.async(execute: reportError)
+        }
     }
     
     var posts: [Post] = []

@@ -10,7 +10,7 @@ import Foundation
 
 
 protocol PostsLoaderDelegate: class {
-    
+//    func postsLoader(_ loader: PostsLoader, )
 }
 
 class PostsLoader {
@@ -32,12 +32,10 @@ class PostsLoader {
     }
     
     private func loadInBackground(page: Int) {
-        let loader = ListingsPageLoader(page: page)
-        if loader.load() {
-        }
+//        let loader = ListingsPageLoader(page: page)
+//        if loader.load() {
+//        }
         
-        if let firstPost = loader.posts.first {
-            
-        }
+        
     }
 }

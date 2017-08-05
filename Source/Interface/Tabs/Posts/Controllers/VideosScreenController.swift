@@ -9,7 +9,7 @@
 import UIKit
 import TVMLKitchen
 
-class VideosScreenController: VideoPageLoaderDelegate {
+class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegate {
     
     var javascript: String {
         let path = Bundle.main.path(forResource: "Video", ofType: "js")!
@@ -21,8 +21,13 @@ class VideosScreenController: VideoPageLoaderDelegate {
         return try! String(contentsOfFile: path)
     }
     
+    lazy var listingsLoader: ListingsPageLoader = {
+        let loader = ListingsPageLoader(delegate: self, page: 1)
+        return loader
+    }()
+    
     init() {
-        
+        listingsLoader.load()
     }
     
     func show(redirectWindow window: UIWindow) {
@@ -36,25 +41,6 @@ class VideosScreenController: VideoPageLoaderDelegate {
             Kitchen.serve(xmlString: self.xml,
                           redirectWindow: window, animatedWindowTransition: true)
         }
-        
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { 
-            Kitchen.appController.evaluate(inJavaScriptContext: self.addVideo,
-                                           completion: nil)
-        }
-        loadPage()
-    }
-    
-    
-    lazy var pageLoader: VideoPageLoader = {
-        let url = URL(string: "https://academy.realm.io/posts/360-andev-2017-huyen-tue-dao-christina-lee-kotlintown/")!
-        return VideoPageLoader(url: url, delegate: self)
-    }()
-    
-    var videoDetailsLoader: VideoDetailsLoader?
-    
-    func loadPage() {
-        pageLoader.load()
     }
     
     private func executeIntialJavascript(controller: TVApplicationController,
@@ -64,17 +50,23 @@ class VideosScreenController: VideoPageLoaderDelegate {
             print("native console logging!")
             print(message)
         }
-        let block = unsafeBitCast(consoleLog, to: AnyObject.self)
-        context.setObject(block,
+        
+        context.setObject(consoleLog,
                           forKeyedSubscript: "debug" as NSString)
         
+        let selectVideo: @convention(block) (String) -> Void = { videoID in
+            print("selected video: \(videoID)")
+            self.selectedPost(id: Int(videoID)!)
+        }
+        context.setObject(selectVideo,
+                          forKeyedSubscript: "selectVideo" as NSString)
+        
+        let playVideo: @convention(block) () -> Void = {
+            print("play video!")
+        }
+        context.setObject(playVideo, forKeyedSubscript: "playVideo" as NSString)
         
         context.evaluateScript(javascript)
-    }
-    
-    private func addVideo(context: JSContext) {
-        print("adding video!")
-        context.evaluateScript("addVideo()")
     }
     
     var viewModel: VideoViewModel?
@@ -98,18 +90,14 @@ class VideosScreenController: VideoPageLoaderDelegate {
         for speaker in viewModel.speakers {
             bridge.addSpeaker(name: speaker.name,
                               imageURL: speaker.avatarURL?.absoluteString)
-            print("adding speaker: \(speaker.name)")
         }
         
         bridge.set(id: "heroImage", attribute: "src", value: viewModel.heroImage)
         bridge.callFunction(name: "clearEvent")
         
         if let general = viewModel.generalEvent, let specific = viewModel.specificEvent {
-//            print("setting event to: \(general)")
             bridge.setEvent(general: general, specific: specific)
         }
-        print("image: \(viewModel.heroImage)")
-        
     }
     
     // MARK: - Page Loader Delegate
@@ -129,12 +117,44 @@ class VideosScreenController: VideoPageLoaderDelegate {
     }
     
     private func add(post: PostDetails) {
+        let id = posts.count
+        posts.append(post)
+        
+        let evaluate: (JSContext) -> Void = { context in
+            let bridge = ContextBridge(context: context)
+            bridge.addVideo(id: id, imageURL: post.imageURL, title: post.title)
+        }
+        
+        Kitchen.appController.evaluate(inJavaScriptContext: evaluate,
+                                       completion: nil)
+    }
+    
+    private func selectedPost(id: Int) {
+        let post = posts[id]
         viewModel = VideoViewModel(post: post)
         Kitchen.appController.evaluate(inJavaScriptContext: self.hydrateView,
                                        completion: nil)
-        
-        print("loaded: \(post)")
-        posts.append(post)
+    }
+    
+    // MARK: - Listings Delegate
+    
+    func listingPageLoader(_ loader: ListingsPageLoader, result: ListingsPageResult) {
+        switch result {
+        case let .success(posts):
+            print("loaded posts: \(posts)")
+            loadVideoDetails(for: posts)
+        case let .error(message):
+            print("error : \(message)")
+        }
+    }
+    
+    private var detailsLoaders = [VideoPageLoader]()
+    private func loadVideoDetails(for posts: [Post]) {
+        for post in posts {
+            let loader = VideoPageLoader(url: post.url, delegate: self)
+            detailsLoaders.append(loader)
+            loader.load()
+        }
     }
 
 }
@@ -145,6 +165,12 @@ private struct ContextBridge {
     
     init(context: JSContext) {
         self.context = context
+    }
+    
+    func addVideo(id: Int, imageURL: URL, title: String) {
+        let url = imageURL.absoluteString
+        let evaluate = "addVideo(\(id), \"\(url)\", \"\(title)\")"
+        context.evaluateScript(evaluate)
     }
     
     func set(id: String, content: String) {

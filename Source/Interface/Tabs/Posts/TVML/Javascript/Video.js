@@ -1,10 +1,12 @@
 
-function addVideo() {
+function addVideo(id, imageURL, title) {
+    imageURL = imageURL.replace("&", "&amp;");
     var document = getActiveDocument();
-    var xml = '<lockup videoID="0"> <img src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" width="384" height="226" /> <title>Startup Swift</title> </lockup>'
+    var xml = '<lockup videoID="' + id + '">'
+    xml += '<img src="' + imageURL + '" width="384" height="226" />'
+    xml += '<title>' + title + '</title> </lockup>'
 
     var node = handler.parse(xml)
-
     var section = document.getElementById("videosSection");
     section.appendChild(node)
 
@@ -132,7 +134,7 @@ var handler = {
         var target = event.target
         var videoID = target.attributes.getNamedItem("videoID").value
         console.log("selected video: " + videoID)
-        addVideo()
+        selectVideo(videoID)
     },
 
     parse: function (XMLString) {

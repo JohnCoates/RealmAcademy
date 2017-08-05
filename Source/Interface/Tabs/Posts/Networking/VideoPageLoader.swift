@@ -48,7 +48,11 @@ class VideoPageLoader: VideoDetailsLoaderDelegate {
         
         self.document = document
         
-        let jsonpURL = jsonp(document: document)
+        guard let jsonpURL = jsonp(document: document) else {
+            delegate?.videoPageLoader(self,
+                                      result: .error(message: "Couldn't find jsonp in url: \(url)"))
+            return
+        }
         
         let detailsLoader = VideoDetailsLoader(jsonp: jsonpURL, delegate: self)
         detailsLoader.load()
@@ -119,14 +123,14 @@ class VideoPageLoader: VideoDetailsLoaderDelegate {
                        twitterUsername: twitterUsername)
     }
     
-    private func jsonp(document: Ji) -> URL {
+    private func jsonp(document: Ji) -> URL? {
         let path = XPathItem(element: "script").with(attribute: "src", containing: ".jsonp").xPath
         
         guard let node = document.xPath(path)?.first,
               let src = node.attributes["src"],
               let url = URL(string: src)
         else {
-            fatalError("Failed to find jsonp in document: \(document)")
+            return nil
         }
         
         return url

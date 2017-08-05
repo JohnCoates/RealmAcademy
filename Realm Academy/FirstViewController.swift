@@ -9,16 +9,10 @@
 import UIKit
 import Ji
 
-class FirstViewController: UIViewController, PostsLoaderDelegate {
-
-    lazy var postsLoader: PostsLoader = {
-        return PostsLoader(delegate: self)
-    }()
+class FirstViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        postsLoader.loadPage()
     }
 }
 

@@ -39,7 +39,7 @@
             <description allowsZooming="true" moreLabel="more" id="description">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
 
             <row>
-               <buttonLockup>
+               <buttonLockup onselect="playVideo()">
                   <badge src="resource://button-play" />
                   <title>Play</title>
                </buttonLockup>
@@ -52,10 +52,6 @@
             <title>Videos</title>
          </header>
          <section id="videosSection">
-            <lockup videoID="0">
-               <img src="https://images.contentful.com/s72atsk5w5jo/3cTlklmseIYWmi0aoaGEoK/344f1a03337534d629b390f973150227/mo-kudeki-startup-swift-header-image.png" width="384" height="226" />
-               <title>Startup Swift</title>
-            </lockup>
          </section>
       </shelf>
       <shelf>
