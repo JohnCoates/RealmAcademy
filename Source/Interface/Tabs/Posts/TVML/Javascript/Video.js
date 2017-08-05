@@ -135,12 +135,11 @@ var handler = {
     select: function(event) {
         var target = event.target
         var videoID = target.attributes.getNamedItem("videoID").value
-        console.log("selected video: " + videoID)
         selectVideo(videoID)
     },
 
     parse: function (XMLString) {
-        XMLString = XMLString.replace("&", "&amp;");
+        XMLString = XMLString.replace(/\&/g, "&amp;");
         var document = getActiveDocument()
         if (!handler.parser) {
             handler.parser = new DOMParser();

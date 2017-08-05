@@ -211,7 +211,6 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
     func listingPageLoader(_ loader: ListingsPageLoader, result: ListingsPageResult) {
         switch result {
         case let .success(posts):
-            print("loaded posts: \(posts)")
             loadVideoDetails(for: posts)
         case let .error(message):
             print("error : \(message)")
