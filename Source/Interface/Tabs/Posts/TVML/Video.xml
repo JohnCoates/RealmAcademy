@@ -81,17 +81,17 @@
                </header>
                <text>try! Swift Tokyo 2017</text>
             </info>
-            <info id="infoRuntime">
+            <info>
                <header>
                   <title>Runtime</title>
                </header>
-               <text>23:01</text>
+               <text id="infoRuntime">23:01</text>
             </info>
-            <info id="infoReleased">
+            <info>
                <header>
                   <title>Released</title>
                </header>
-               <text>March 31, 2017</text>
+               <text id="infoReleased">March 31, 2017</text>
             </info>
          </infoTable>
          <infoTable>
@@ -108,7 +108,7 @@
                <header>
                   <title>Additional</title>
                </header>
-               <text>Cantonese (Subtitles)</text>
+               <text>Cantonese (CC)</text>
             </info>
          </infoTable>
          <infoTable style="tv-line-spacing:10;" id="infoAccessebility">

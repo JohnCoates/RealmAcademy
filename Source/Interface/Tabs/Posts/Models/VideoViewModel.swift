@@ -35,6 +35,31 @@ struct VideoViewModel {
         
         return time
     }
+    
+    var runtime: String {
+        let now = Date()
+        let seconds = post.videoDetails.duration as TimeInterval
+        let calendar = Calendar.current
+        let left = calendar.dateComponents([.hour, .minute, .second],
+                                           from: now,
+                                           to: Date(timeIntervalSinceNow: seconds))
+        
+        var time = ""
+        if let hour = left.hour, hour > 0 {
+            time += String(hour) + ":"
+        }
+        
+        if let minute = left.minute, minute > 0 {
+            time += String(minute) + ":"
+        }
+        
+        if let second = left.second, second > 0 {
+            time += String(second)
+        }
+        
+        return time
+    }
+    
     var created: Date {
         return Date(timeIntervalSince1970: Double(post.videoDetails.createdAt))
     }
@@ -45,6 +70,18 @@ struct VideoViewModel {
         
         let year = components.year!
         return String(describing: year)
+    }
+    
+    static let dateFormatter = makeDateFormatter()
+    private static func makeDateFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }
+    
+    var released: String {
+        return VideoViewModel.dateFormatter.string(from: created)
     }
     
     var title: String {
@@ -61,6 +98,34 @@ struct VideoViewModel {
     
     var heroImage: String {
         return post.imageURL.absoluteString
+    }
+    
+    var specificEvent: String? {
+        guard let seo = post.videoDetails.seoDescription else {
+            return nil
+        }
+        
+        var cleaned = seo.replacingOccurrences(of: "at ", with: "")
+        if cleaned.hasPrefix("a ") {
+            let index = cleaned.index(cleaned.startIndex, offsetBy: "a ".characters.count)
+            cleaned = cleaned.substring(from: index)
+        }
+        if cleaned.hasSuffix(" video") {
+            let suffix = " video"
+            let index = cleaned.index(cleaned.endIndex, offsetBy: -suffix.characters.count)
+            cleaned = cleaned.substring(to: index)
+        }
+        return cleaned.trimmed.whitespaceCleaned
+    }
+    
+    var generalEvent: String? {
+        guard let specificEvent = specificEvent else {
+            return nil
+        }
+        
+        let cleaned = specificEvent.replacingRegexMatches(pattern: "20[0-9]{2}",
+                                                          replaceWith: "")
+        return cleaned.trimmed.whitespaceCleaned
     }
     
 }

@@ -90,15 +90,24 @@ class VideosScreenController: VideoPageLoaderDelegate {
         bridge.set(id: "headerYear", content: viewModel.year)
         bridge.set(id: "title", content: viewModel.title)
         bridge.set(id: "description", content: viewModel.description)
+        bridge.set(id: "infoRuntime", content: viewModel.runtime)
+        bridge.set(id: "infoReleased", content: viewModel.released)
+        
         bridge.removeSpeakers()
         
         for speaker in viewModel.speakers {
-            bridge.addSpeaker(name: speaker.name)
+            bridge.addSpeaker(name: speaker.name,
+                              imageURL: speaker.avatarURL?.absoluteString)
             print("adding speaker: \(speaker.name)")
         }
-        bridge.removeChildren(forID: "sidebarEvent")
         
         bridge.set(id: "heroImage", attribute: "src", value: viewModel.heroImage)
+        bridge.callFunction(name: "clearEvent")
+        
+        if let general = viewModel.generalEvent, let specific = viewModel.specificEvent {
+//            print("setting event to: \(general)")
+            bridge.setEvent(general: general, specific: specific)
+        }
         print("image: \(viewModel.heroImage)")
         
     }
@@ -150,12 +159,25 @@ private struct ContextBridge {
         context.evaluateScript("removeChildrenForId(\"\(id)\")")
     }
     
-    func addSpeaker(name: String) {
-        context.evaluateScript("addSpeaker(\"\(name)\")")
+    func addSpeaker(name: String, imageURL: String?) {
+        var script = "addSpeaker(\"\(name)\""
+        if let imageURL = imageURL {
+            script += ", \"\(imageURL)\""
+        }
+        script += ")"
+        context.evaluateScript(script)
+    }
+    
+    func setEvent(general: String, specific: String) {
+        context.evaluateScript("setEvent(\"\(general)\", \"\(specific)\")")
     }
     
     func removeSpeakers() {
         context.evaluateScript("removeSpeakers()")
+    }
+    
+    func callFunction(name: String) {
+        context.evaluateScript("\(name)()")
     }
     
 }

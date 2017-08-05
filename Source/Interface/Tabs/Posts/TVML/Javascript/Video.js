@@ -37,31 +37,81 @@ function removeSpeakers() {
         var child = remove[index]
         parent.removeChild(child)
     }
+
+    removeChildrenForId("monograms")
 }
 
-function addSpeaker(name) {
+function clearEvent() {
+  removeChildrenForId("sidebarEvent")
+  removeChildrenForId("infoEvent")
+}
+
+function setEvent(general, specific) {
+  setSidebarEvent(general)
+  setInfoEvent(specific)
+}
+
+function setSidebarEvent(name) {
+  var id = "sidebarEvent"
+  addXMLToId("<header> <title>Event</title></header>", id)
+  addXMLToId("<text>" + name + "</text>", id)
+
+}
+
+function setInfoEvent(name) {
+  var id = "infoEvent"
+  addXMLToId("<header> <title>Event</title></header>", id)
+  addXMLToId("<text>" + name + "</text>", id)
+}
+
+function addSpeaker(name, imageURL) {
+    addSpeakerToSidebar(name)
+    addSpeakerToMonograms(name, imageURL)
+}
+
+function addSpeakerToSidebar(name) {
     var parent = elementWithId("sidebarSpeakers")
     var xml = '<text>'+name+'</text>'
 
     var node = handler.parse(xml)
 
     parent.appendChild(node)
-    console.log(node)
 }
 
-function clearEvent() {
-    
+function addSpeakerToMonograms(name, imageURL) {
+    var xml = '<monogramLockup><monogram '
+    if (imageURL) {
+        xml += 'src="' + imageURL + '" '
+    }
+    var lastIndex = name.lastIndexOf(" ")
+
+    if (lastIndex) {
+        var firstName = name.substring(0, lastIndex)
+        var lastName = name.substring(lastIndex + 1)
+        xml += 'firstName="' + firstName + '" '
+        xml += 'lastName="' + lastName + '"'
+    }
+    xml += ' />'
+    xml += '<title>' + name + '</title>'
+    xml += '<subtitle>Speaker</subtitle></monogramLockup>'
+    addXMLToId(xml, "monograms")
+}
+
+function addXMLToId(xml, id) {
+    var parent = elementWithId(id)
+    var node = handler.parse(xml)
+    parent.appendChild(node)
 }
 
 function removeChildrenForId(id) {
     var parent = elementWithId(id)
     var children = parent.children
-    
+
     var remove = Array()
     for (var i=0; i < children.length; i++) {
         remove.push(children.item(i))
     }
-    
+
     for (var index in remove) {
         parent.removeChild(remove[index])
     }
