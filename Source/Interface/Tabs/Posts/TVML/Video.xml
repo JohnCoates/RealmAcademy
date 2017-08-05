@@ -101,10 +101,6 @@
                <text>English (Stereo, CC)</text>
             </info>
             <info id="infoAdditionalLanguages">
-               <header>
-                  <title>Additional</title>
-               </header>
-               <text>Cantonese (CC)</text>
             </info>
          </infoTable>
          <infoTable style="tv-line-spacing:10;" id="infoAccessebility">

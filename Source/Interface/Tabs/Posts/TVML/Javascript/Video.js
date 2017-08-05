@@ -15,6 +15,9 @@ function addVideo(id, imageURL, title) {
 function setContent(id, content) {
     var document = getActiveDocument();
     var node = document.getElementById(id)
+    if (content == "") {
+      content = " "
+    }
     node.textContent = content
 }
 

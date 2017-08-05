@@ -8,34 +8,43 @@
 
 import Foundation
 
-
-protocol PostsLoaderDelegate: class {
-//    func postsLoader(_ loader: PostsLoader, )
-}
-
-class PostsLoader {
-    weak var delegate: PostsLoaderDelegate?
+class PostsLoader: ListingsPageLoaderDelegate {
+    weak var delegate: ListingsPageLoaderDelegate?
     
-    init(delegate: PostsLoaderDelegate) {
+    init(delegate: ListingsPageLoaderDelegate) {
         self.delegate = delegate
     }
     
     private var page = 1
     
-    func loadPage() {
-        let loadPage = self.page
+    var loader: ListingsPageLoader?
+    
+    func load() {
+        let loadPage = page
         page += 1
         
-        DispatchQueue.global(qos: .background).async {
-            self.loadInBackground(page: loadPage)
+        let loader = ListingsPageLoader(delegate: self, page: loadPage)
+        loader.load()
+        self.loader = loader
+    }
+    
+    func listingPageLoader(_ loader: ListingsPageLoader, result: ListingsPageResult) {
+        delegate?.listingPageLoader(loader, result: result)
+        self.loader = nil
+        
+        switch result {
+        case let .success(posts):
+            if posts.count > 0 {
+                let unsupportedHeadline = "Realm Adventure Calendar 2016"
+                if posts.index(where: { $0.headline == unsupportedHeadline }) != nil {
+                    break
+                } else {
+                    load()
+                }
+            }
+        default:
+            break
         }
     }
     
-    private func loadInBackground(page: Int) {
-//        let loader = ListingsPageLoader(page: page)
-//        if loader.load() {
-//        }
-        
-        
-    }
 }

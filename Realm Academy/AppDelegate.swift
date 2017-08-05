@@ -11,14 +11,12 @@ import TVMLKitchen
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
     
     let controller = VideosScreenController()
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        controller.show(redirectWindow: window!)
+        controller.show()
         
         return true
     }

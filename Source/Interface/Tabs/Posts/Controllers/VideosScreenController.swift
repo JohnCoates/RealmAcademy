@@ -22,8 +22,8 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
         return try! String(contentsOfFile: path)
     }
     
-    lazy var listingsLoader: ListingsPageLoader = {
-        let loader = ListingsPageLoader(delegate: self, page: 1)
+    lazy var listingsLoader: PostsLoader = {
+        let loader = PostsLoader(delegate: self)
         return loader
     }()
     
@@ -31,17 +31,35 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
         listingsLoader.load()
     }
     
-    func show(redirectWindow window: UIWindow) {
+    func show() {
         let cookbook = Cookbook(launchOptions: [:])
         cookbook.evaluateAppJavaScriptInContext = self.executeIntialJavascript
         Kitchen.prepare(cookbook)
+        showLoading()
+    }
+    
+    
+    private func showLoading() {
+        Kitchen.serve(recipe: LoadingRecipe(message: "Loading Content"))
+    }
+    
+    private func showVideoScreen() {
         
-        // Stops responding to user input if done immediately
-        DispatchQueue.main.async {
-            Kitchen.window.alpha = 1
-            Kitchen.serve(xmlString: self.xml,
-                          redirectWindow: window, animatedWindowTransition: true)
+        let show: (JSContext) -> Void =  { context in
+            context.evaluateScript("navigationDocument.clear()")
+
+            DispatchQueue.main.async {
+                self.isShowingLoadingScreen = false
+                Kitchen.dismissModal()
+                Kitchen.serve(xmlString: self.xml)
+                DispatchQueue.main.async {
+                    self.canAddVideos = true
+                    self.addQueuedVideosToShelf()
+                }
+                
+            }
         }
+        Kitchen.appController.evaluate(inJavaScriptContext: show, completion: nil)
     }
     
     private func executeIntialJavascript(controller: TVApplicationController,
@@ -126,6 +144,9 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
     // MARK: - Page Loader Delegate
     
     var posts = [PostDetails]()
+    var canAddVideos = false
+    var isShowingLoadingScreen = true
+    var addQueue = [PostDetails]()
     
     func videoPageLoader(_ loader: VideoPageLoader, result: VideoPageResult) {
         switch result {
@@ -140,8 +161,34 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
     }
     
     private func add(post: PostDetails) {
-        let id = posts.count
         posts.append(post)
+        if (!canAddVideos) {
+            addQueue.append(post)
+            
+        } else {
+            addVideoToShelf(post: post)
+        }
+        
+        if isShowingLoadingScreen {
+            showVideoScreen()
+        }
+    }
+    
+    private func addQueuedVideosToShelf() {
+        for post in addQueue {
+            addVideoToShelf(post: post)
+        }
+        addQueue.removeAll()
+        
+        if posts.count > 0 {
+            selectedPost(id: 0)
+        }
+    }
+    
+    private func addVideoToShelf(post: PostDetails) {
+        guard let id = posts.index(where: { $0.title == post.title }) else {
+            fatalError("Couldn't find video ID")
+        }
         
         let evaluate: (JSContext) -> Void = { context in
             let bridge = ContextBridge(context: context)
