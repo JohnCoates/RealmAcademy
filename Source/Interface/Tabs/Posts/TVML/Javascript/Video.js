@@ -1,6 +1,5 @@
 
 function addVideo(id, imageURL, title) {
-    imageURL = imageURL.replace("&", "&amp;");
     var document = getActiveDocument();
     var xml = '<lockup videoID="' + id + '">'
     xml += '<img src="' + imageURL + '" width="384" height="226" />'
@@ -138,6 +137,7 @@ var handler = {
     },
 
     parse: function (XMLString) {
+        XMLString = XMLString.replace("&", "&amp;");
         var document = getActiveDocument()
         if (!handler.parser) {
             handler.parser = new DOMParser();

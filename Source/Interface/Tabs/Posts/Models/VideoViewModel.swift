@@ -45,19 +45,36 @@ struct VideoViewModel {
                                            to: Date(timeIntervalSinceNow: seconds))
         
         var time = ""
+        var hasHours: Bool = false
         if let hour = left.hour, hour > 0 {
+            hasHours = true
             time += String(hour) + ":"
         }
         
         if let minute = left.minute, minute > 0 {
-            time += String(minute) + ":"
+            time += self.time(fromInt: minute, padded: hasHours) + ":"
         }
         
         if let second = left.second, second > 0 {
-            time += String(second)
+            time += self.time(fromInt: second, padded: true)
         }
         
         return time
+    }
+    
+    private func time(fromInt from: Int?, padded: Bool) -> String {
+        if let from = from {
+            var padding = ""
+            var value = String(from)
+            if padded, value.characters.count == 1 {
+                padding = "0"
+            }
+            
+            return padding + value
+        }
+        else {
+            return "0"
+        }
     }
     
     var created: Date {
@@ -105,16 +122,20 @@ struct VideoViewModel {
             return nil
         }
         
-        var cleaned = seo.replacingOccurrences(of: "at ", with: "")
-        if cleaned.hasPrefix("a ") {
-            let index = cleaned.index(cleaned.startIndex, offsetBy: "a ".characters.count)
+        let prefixes = ["an ", "at ", "a "]
+        var cleaned = seo
+        
+        for prefix in prefixes where cleaned.lowercased().hasPrefix(prefix) {
+            let index = cleaned.index(cleaned.startIndex, offsetBy: prefix.characters.count)
             cleaned = cleaned.substring(from: index)
         }
-        if cleaned.hasSuffix(" video") {
-            let suffix = " video"
+        
+        let suffixes = [" video", " videos"]
+        for suffix in suffixes where cleaned.lowercased().hasSuffix(suffix) {
             let index = cleaned.index(cleaned.endIndex, offsetBy: -suffix.characters.count)
             cleaned = cleaned.substring(to: index)
         }
+        
         return cleaned.trimmed.whitespaceCleaned
     }
     
@@ -128,4 +149,15 @@ struct VideoViewModel {
         return cleaned.trimmed.whitespaceCleaned
     }
     
+    var videoURL: URL? {
+        let assets = post.videoDetails.mediaAssets
+        let formats = ["4k", "1080p", "720p"]
+        for format in formats {
+            if let index = assets.index(where: { $0.display_name == format && $0.type == "hls_video" }) {
+                return assets[index].url
+            }
+        }
+        
+        return nil
+    }
 }

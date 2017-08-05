@@ -8,6 +8,7 @@
 
 import UIKit
 import TVMLKitchen
+import AVKit
 
 class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegate {
     
@@ -45,28 +46,50 @@ class VideosScreenController: VideoPageLoaderDelegate, ListingsPageLoaderDelegat
     
     private func executeIntialJavascript(controller: TVApplicationController,
                                          context: JSContext) {
-        print("evaluating initial javascript")
-        let consoleLog: @convention(block) (String) -> Void = { message in
-            print("native console logging!")
-            print(message)
-        }
-        
-        context.setObject(consoleLog,
-                          forKeyedSubscript: "debug" as NSString)
-        
         let selectVideo: @convention(block) (String) -> Void = { videoID in
-            print("selected video: \(videoID)")
             self.selectedPost(id: Int(videoID)!)
         }
         context.setObject(selectVideo,
                           forKeyedSubscript: "selectVideo" as NSString)
         
         let playVideo: @convention(block) () -> Void = {
-            print("play video!")
+            self.playVideo()
+            
         }
         context.setObject(playVideo, forKeyedSubscript: "playVideo" as NSString)
         
+        let viewDescription: @convention(block) () -> Void = {
+            print("view description!")
+            self.viewDescription()
+        }
+        context.setObject(viewDescription,
+                          forKeyedSubscript: "viewDescription" as NSString)
+        
         context.evaluateScript(javascript)
+    }
+    
+    private func playVideo() {
+        guard let videoURL = viewModel?.videoURL else {
+            return
+        }
+        
+        let vc = AVPlayerViewController()
+        vc.player = AVPlayer(url: videoURL)
+        vc.player?.play()
+        DispatchQueue.main.async {
+            Kitchen.navigationController.pushViewController(vc, animated: true)
+        }
+    }
+    
+    private func viewDescription() {
+        guard let viewModel = viewModel else {
+            return
+        }
+        
+        Kitchen.serve(recipe: AlertRecipe(
+            title: viewModel.title,
+            description: viewModel.description)
+        )
     }
     
     var viewModel: VideoViewModel?

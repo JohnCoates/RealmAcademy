@@ -36,7 +36,7 @@
                <badge src="resource://hd" class="badge" />
                <badge src="resource://cc" class="badge" id="CCBadge" />
             </row>
-            <description allowsZooming="true" moreLabel="more" id="description">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
+            <description allowsZooming="true" moreLabel="more" id="description" onselect="viewDescription()">In this talk, Mo Kudeki shares lessons learned over the past year picking up Swift while taking the Hey! VINA app from MVP to production with thousands of daily users.</description>
 
             <row>
                <buttonLockup onselect="playVideo()">
