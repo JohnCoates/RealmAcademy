@@ -177,13 +177,22 @@ class VideoPageLoader: VideoDetailsLoaderDelegate {
     private func imageURL(document: Ji) -> URL {
         let path = XPathItem(element: "div", hasClass: "post-header").xPath
         
-        guard let node = document.xPath(path)?.first,
-            let style = node.attributes["style"]?.replacingOccurrences(of: "')", with: ""),
-            let url = style.detectedURLS.first?.secured else {
+        guard let node = document.xPath(path)?.first else {
             fatalError("Couldn't find image url for page: \(document)")
         }
         
-        return url
+        var url: URL?
+        if let style = node.attributes["style"]?.replacingOccurrences(of: "')", with: "") {
+            url = style.detectedURLS.first?.secured
+        } else if let childrenNode = node.children.filter({ $0.name == "img" ? true : false }).first {
+            url = childrenNode.attributes["src"]?.detectedURLS.first?.secured
+        }
+        
+        if url == nil {
+            fatalError("Couldn't find image url for page: \(document)")
+        }
+        
+        return url!
     }
     
     // MARK: - Video Details Loader Delegate
